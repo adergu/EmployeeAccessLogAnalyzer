@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 class DataValidator:
     @staticmethod
@@ -18,13 +19,7 @@ class DataValidator:
         except Exception as e:
             raise ValueError(f"Error reading the CSV file: {e}")
 
-        # Check requiredcolums
-        required_columns = ['Employee Name', 'Event', 'Timestamp']
-        for col in required_columns:
-            if col not in log_data.columns:
-                raise ValueError(f"Missing required column: {col}")
-
-        # Identify incompleteRows
+        # Identify incomplete rows
         missing_name = log_data['Employee Name'].isna()
         missing_event = log_data['Event'].isna()
         missing_timestamp = log_data['Timestamp'].isna()
@@ -33,16 +28,10 @@ class DataValidator:
         invalid_rows = log_data[missing_name | missing_event | missing_timestamp].copy()
         invalid_rows['Missing Field'] = invalid_rows.apply(
             lambda row: ", ".join(
-                [
-                    field for field, missing in zip(
-                        ['Employee Name', 'Event', 'Timestamp'],
-                        [
-                            pd.isna(row['Employee Name']),
-                            pd.isna(row['Event']),
-                            pd.isna(row['Timestamp'])
-                        ]
-                    ) if missing
-                ]
+                [field for field, missing in zip(
+                    ['Employee Name', 'Event', 'Timestamp'], 
+                    [pd.isna(row['Employee Name']), pd.isna(row['Event']), pd.isna(row['Timestamp'])]
+                ) if missing]
             ),
             axis=1
         )
@@ -53,14 +42,21 @@ class DataValidator:
         return valid_rows, invalid_rows
 
 if __name__ == "__main__":
-    # Example usage
-    file_path = "log.csv"  # Replace with the path to your log file
+    # Define the file path
+    file_path = "log.csv"  # Replace with the actual path to your file
 
-    try:
-        valid_rows, invalid_rows = DataValidator.validate_log(file_path)
-        print("Valid Rows:")
-        print(valid_rows)
-        print("\nInvalid Rows:")
-        print(invalid_rows)
-    except ValueError as e:
-        print(f"Error: {e}")
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        print(f"Error: File not found at {file_path}")
+    else:
+        try:
+            # Validate the log file
+            valid_rows, invalid_rows = DataValidator.validate_log(file_path)
+
+            print("Valid Rows:")
+            print(valid_rows)
+
+            print("\nInvalid Rows:")
+            print(invalid_rows)
+        except ValueError as e:
+            print(f"Error: {e}")
