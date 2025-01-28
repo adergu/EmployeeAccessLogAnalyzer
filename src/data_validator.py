@@ -18,13 +18,13 @@ class DataValidator:
         except Exception as e:
             raise ValueError(f"Error reading the CSV file: {e}")
 
-        # Check required columns
+        # Check requiredcolums
         required_columns = ['Employee Name', 'Event', 'Timestamp']
         for col in required_columns:
             if col not in log_data.columns:
                 raise ValueError(f"Missing required column: {col}")
 
-        # Identify incomplete rows
+        # Identify incompleteRows
         missing_name = log_data['Employee Name'].isna()
         missing_event = log_data['Event'].isna()
         missing_timestamp = log_data['Timestamp'].isna()
@@ -58,10 +58,8 @@ if __name__ == "__main__":
 
     try:
         valid_rows, invalid_rows = DataValidator.validate_log(file_path)
-
         print("Valid Rows:")
         print(valid_rows)
-
         print("\nInvalid Rows:")
         print(invalid_rows)
     except ValueError as e:
