@@ -35,7 +35,7 @@ class LogSummary:
         # Initialize summary list
         summary = []
 
-        # Group by Employee Name
+        # Group by Employee Names
         for employee, group in log_data.groupby('Employee Name'):
             total_check_ins = 0
             total_time = timedelta(0)
@@ -66,14 +66,13 @@ class LogSummary:
             if in_time is not None:
                 errors.append("Check-In without Check-Out")
 
-            # Add the summary for the employee
+            # Add the summary for the employees
             summary.append({
                 'Employee Name': employee,
                 'Total Check-Ins': total_check_ins,
                 'Cumulative Time (hours)': total_time.total_seconds() / 3600,
                 'Errors': ", ".join(errors) if errors else "None"
             })
-
         # Convert summary to DataFrame
         summary_df = pd.DataFrame(summary)
         return summary_df
@@ -84,10 +83,8 @@ if __name__ == "__main__":
 
     try:
         summary_df = LogSummary.generate_summary(file_path)
-
         print("Employee Log Summary:")
         print(summary_df)
-
         # Optionally, save the summary to a CSV file
         summary_df.to_csv("log_summary.csv", index=False)
     except ValueError as e:
